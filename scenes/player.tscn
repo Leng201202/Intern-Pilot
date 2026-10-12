@@ -1,0 +1,150 @@
+[gd_scene load_steps=15 format=3]
+
+[ext_resource type="Script" path="res://scripts/player/player_controller.gd" id="1_controller"]
+[ext_resource type="Resource" path="res://resources/default_movement_profile.tres" id="2_profile"]
+[ext_resource type="Script" path="res://scripts/player/stylized_character.gd" id="3_visual"]
+
+[sub_resource type="CapsuleShape3D" id="CapsuleShape_player"]
+radius = 0.42
+height = 1.8
+
+[sub_resource type="StandardMaterial3D" id="Material_robe"]
+albedo_color = Color(0.08, 0.20, 0.22, 1)
+roughness = 0.78
+
+[sub_resource type="StandardMaterial3D" id="Material_trim"]
+albedo_color = Color(0.74, 0.20, 0.12, 1)
+roughness = 0.65
+
+[sub_resource type="StandardMaterial3D" id="Material_skin"]
+albedo_color = Color(0.83, 0.61, 0.43, 1)
+roughness = 0.8
+
+[sub_resource type="StandardMaterial3D" id="Material_dark"]
+albedo_color = Color(0.025, 0.035, 0.04, 1)
+roughness = 0.62
+
+[sub_resource type="StandardMaterial3D" id="Material_blade"]
+albedo_color = Color(0.60, 0.76, 0.77, 1)
+metallic = 0.72
+roughness = 0.28
+
+[sub_resource type="CapsuleMesh" id="Mesh_torso"]
+material = SubResource("Material_robe")
+radius = 0.35
+height = 0.92
+
+[sub_resource type="SphereMesh" id="Mesh_head"]
+material = SubResource("Material_skin")
+radius = 0.24
+height = 0.48
+
+[sub_resource type="BoxMesh" id="Mesh_limb"]
+material = SubResource("Material_robe")
+size = Vector3(0.18, 0.68, 0.18)
+
+[sub_resource type="BoxMesh" id="Mesh_boot"]
+material = SubResource("Material_dark")
+size = Vector3(0.2, 0.76, 0.22)
+
+[sub_resource type="BoxMesh" id="Mesh_scarf"]
+material = SubResource("Material_trim")
+size = Vector3(0.18, 0.72, 0.05)
+
+[sub_resource type="BoxMesh" id="Mesh_sword"]
+material = SubResource("Material_blade")
+size = Vector3(0.07, 1.18, 0.035)
+
+[sub_resource type="ParticleProcessMaterial" id="Particle_dash"]
+emission_shape = 3
+emission_box_extents = Vector3(0.35, 0.7, 0.2)
+direction = Vector3(0, 0, 1)
+spread = 20.0
+initial_velocity_min = 2.0
+initial_velocity_max = 5.0
+gravity = Vector3(0, 0.3, 0)
+scale_min = 0.035
+scale_max = 0.08
+color = Color(0.65, 0.94, 0.90, 0.7)
+
+[sub_resource type="QuadMesh" id="Mesh_particle"]
+size = Vector2(0.08, 0.55)
+
+[node name="Player" type="CharacterBody3D" groups=["player"]]
+collision_layer = 2
+collision_mask = 1
+floor_stop_on_slope = true
+floor_max_angle = 0.9
+script = ExtResource("1_controller")
+movement_profile = ExtResource("2_profile")
+
+[node name="CollisionShape3D" type="CollisionShape3D" parent="."]
+position = Vector3(0, 0.9, 0)
+shape = SubResource("CapsuleShape_player")
+
+[node name="VisualRoot" type="Node3D" parent="."]
+script = ExtResource("3_visual")
+
+[node name="Torso" type="MeshInstance3D" parent="VisualRoot"]
+position = Vector3(0, 1.35, 0)
+mesh = SubResource("Mesh_torso")
+
+[node name="Head" type="MeshInstance3D" parent="VisualRoot"]
+position = Vector3(0, 2.05, 0)
+mesh = SubResource("Mesh_head")
+
+[node name="Hair" type="MeshInstance3D" parent="VisualRoot"]
+position = Vector3(0, 2.18, 0.02)
+scale = Vector3(1.05, 0.55, 1.05)
+mesh = SubResource("Mesh_head")
+material_override = SubResource("Material_dark")
+
+[node name="LeftArm" type="MeshInstance3D" parent="VisualRoot"]
+position = Vector3(-0.43, 1.45, 0)
+mesh = SubResource("Mesh_limb")
+
+[node name="RightArm" type="MeshInstance3D" parent="VisualRoot"]
+position = Vector3(0.43, 1.45, 0)
+mesh = SubResource("Mesh_limb")
+
+[node name="LeftLeg" type="MeshInstance3D" parent="VisualRoot"]
+position = Vector3(-0.18, 0.55, 0)
+mesh = SubResource("Mesh_boot")
+
+[node name="RightLeg" type="MeshInstance3D" parent="VisualRoot"]
+position = Vector3(0.18, 0.55, 0)
+mesh = SubResource("Mesh_boot")
+
+[node name="Scarf" type="MeshInstance3D" parent="VisualRoot"]
+position = Vector3(0, 1.78, 0.24)
+rotation = Vector3(0.22, 0, 0)
+mesh = SubResource("Mesh_scarf")
+
+[node name="Sword" type="MeshInstance3D" parent="VisualRoot"]
+position = Vector3(0.38, 1.12, 0.18)
+rotation = Vector3(0.15, 0, -0.45)
+mesh = SubResource("Mesh_sword")
+
+[node name="CameraYaw" type="Node3D" parent="."]
+position = Vector3(0, 1.45, 0)
+
+[node name="CameraPitch" type="Node3D" parent="CameraYaw"]
+
+[node name="SpringArm3D" type="SpringArm3D" parent="CameraYaw/CameraPitch"]
+spring_length = 5.5
+margin = 0.16
+collision_mask = 1
+
+[node name="Camera3D" type="Camera3D" parent="CameraYaw/CameraPitch/SpringArm3D"]
+current = true
+fov = 70.0
+
+[node name="DashRibbons" type="GPUParticles3D" parent="."]
+position = Vector3(0, 1.0, 0.3)
+emitting = false
+amount = 22
+lifetime = 0.38
+one_shot = false
+process_material = SubResource("Particle_dash")
+draw_pass_1 = SubResource("Mesh_particle")
+

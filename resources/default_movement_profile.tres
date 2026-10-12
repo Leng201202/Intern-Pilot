@@ -1,0 +1,28 @@
+[gd_resource type="Resource" script_class="MovementProfile" load_steps=2 format=3]
+
+[ext_resource type="Script" path="res://scripts/resources/movement_profile.gd" id="1_profile"]
+
+[resource]
+script = ExtResource("1_profile")
+walk_speed = 6.0
+sprint_speed = 10.5
+ground_acceleration = 34.0
+air_acceleration = 12.0
+rotation_speed = 12.0
+jump_velocity = 9.5
+gravity = 24.0
+coyote_time = 0.14
+jump_buffer_time = 0.14
+dash_speed = 21.0
+dash_duration = 0.22
+dash_cooldown = 0.15
+wall_run_speed = 9.5
+wall_run_duration = 1.15
+wall_run_vertical_speed = 1.1
+wall_jump_push = 6.5
+mantle_speed = 6.0
+mantle_height = 1.5
+mouse_sensitivity = 0.0025
+camera_min_pitch_degrees = -55.0
+camera_max_pitch_degrees = 62.0
+

@@ -1,0 +1,10 @@
+# Godot generated files
+.godot/
+build/
+dist/
+
+# Local tooling
+node_modules/
+.DS_Store
+*.log
+
