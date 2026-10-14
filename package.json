@@ -1,0 +1,28 @@
+{
+  "name": "internpilot-ai",
+  "version": "0.1.0",
+  "private": true,
+  "workspaces": [
+    "frontend"
+  ],
+  "engines": {
+    "node": ">=22"
+  },
+  "scripts": {
+    "dev": "npm run dev --workspace @internpilot/frontend",
+    "build": "npm run build --workspace @internpilot/frontend",
+    "lint": "npm run lint --workspace @internpilot/frontend",
+    "typecheck": "npm run typecheck --workspace @internpilot/frontend",
+    "test": "npm run test --workspace @internpilot/frontend",
+    "test:watch": "npm run test:watch --workspace @internpilot/frontend",
+    "format": "npm run format --workspace @internpilot/frontend",
+    "format:check": "npm run format:check --workspace @internpilot/frontend",
+    "preview": "npm run preview --workspace @internpilot/frontend",
+    "supabase:start": "supabase start",
+    "supabase:stop": "supabase stop",
+    "supabase:status": "supabase status"
+  },
+  "devDependencies": {
+    "supabase": "2.120.0"
+  }
+}
