@@ -1,10 +1,23 @@
 import { requiredEnv } from "./env.ts";
 
+// Keep this list aligned with the pinned @supabase/supabase-js client. In
+// particular, functions.invoke() sends x-client-info on browser requests.
+const supabaseRequestHeaders = [
+  "authorization",
+  "x-client-info",
+  "apikey",
+  "content-type",
+  "x-retry-count",
+  "traceparent",
+  "tracestate",
+  "baggage",
+].join(", ");
+
 export function corsHeaders(request: Request): HeadersInit {
   const configuredOrigin = requiredEnv("FRONTEND_URL");
   const requestOrigin = request.headers.get("origin");
   return {
-    "Access-Control-Allow-Headers": "authorization, apikey, content-type",
+    "Access-Control-Allow-Headers": supabaseRequestHeaders,
     "Access-Control-Allow-Methods": "GET, POST, DELETE, OPTIONS",
     "Access-Control-Allow-Origin":
       requestOrigin === configuredOrigin ? requestOrigin : configuredOrigin,
