@@ -199,7 +199,7 @@ Use the database-design tables:
 
 - `email_connections`: encrypted Gmail refresh token and sync checkpoint.
 - `email_events`: Gmail message/thread IDs, category, processing state, optional application association, timestamps; **no body**.
-- `review_queue`: unresolved cases and reason codes, Gmail deep link/reference, optional application association; **no body**.
+- `review_items`: unresolved cases and reason codes, Gmail deep link/reference, optional application association; **no body**.
 - `applications`: status, deadlines, `closed_at`, `archived_at`.
 - `application_history`: previous/new status, source, timestamp, linked email event.
 - `notifications`: dashboard alerts.
@@ -213,16 +213,13 @@ Enforce unique `(email_connection_id, gmail_message_id)` or equivalent to preven
 GMAIL_INITIAL_SYNC_MODE=new_only
 GMAIL_INITIAL_SYNC_DAYS=0
 GMAIL_SYNC_ENABLED=true
-AI_ENABLED=true
-AI_PRIVACY_MODE=strict
-AI_ALLOW_EMAIL_BODY=false
-AI_ALLOW_ATTACHMENTS=false
-AI_BLOCK_ON_UNCERTAINTY=true
-AI_LOG_REQUEST_CONTENT=false
-AI_MAX_EMAILS_PER_SYNC=50
+AI_EMAIL_ANALYSIS_ENABLED=false
+AI_REAL_EMAIL_RISK_ACCEPTED=false
+AI_MAX_REQUESTS_PER_SYNC=20
+GMAIL_MAX_MESSAGES_PER_SYNC=50
 ```
 
-`AI_ALLOW_EMAIL_BODY=false` prohibits sending **raw** email bodies; the explicitly sanitized and validated minimal excerpt described above is the only permitted text input. Consider renaming this setting to `AI_ALLOW_RAW_EMAIL_BODY=false` during implementation to avoid ambiguity. Security invariants must be enforced in code and cannot be disabled through environment variables.
+There is intentionally no switch that permits raw bodies or attachments. The explicitly sanitized and validated minimal excerpt described above is the only permitted text input. Security invariants are enforced in code and cannot be disabled through environment variables. The two AI flags and the owner's risk acknowledgement must all be enabled before a request; none overrides a privacy block.
 
 ## 9. Reliability, Quotas, and Retention
 
@@ -265,4 +262,4 @@ AI_MAX_EMAILS_PER_SYNC=50
 - `system-design.md`
 - `database-design.md`
 
-**Next design artifact:** `security-design.md`, detailing sanitization rules, OAuth handling, access control, privacy testing, and provider data-use review.
+**Implementation reference:** `security-design.md` details sanitization rules, OAuth handling, access control, privacy testing, and provider data-use review.

@@ -167,7 +167,8 @@ GMAIL_INITIAL_SYNC_MODE=new_only
 GMAIL_INITIAL_SYNC_DAYS=0
 GMAIL_SYNC_ENABLED=true
 AI_EMAIL_ANALYSIS_ENABLED=true
-AI_MAX_EMAILS_PER_SYNC=50
+AI_MAX_REQUESTS_PER_SYNC=20
+GMAIL_MAX_MESSAGES_PER_SYNC=50
 ```
 
 Configuration is **server-side**; it is not exposed to the browser. `historical` is a future/configurable mode, not the MVP default. New-only establishes the initial checkpoint at connection time. Use Gmail history IDs or a carefully maintained time/message cursor and pagination, with an explicit fallback for expired Gmail history IDs. Cursor advancement must not skip unprocessed messages.

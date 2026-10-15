@@ -26,6 +26,11 @@ jobs:
       - name: Install dependencies
         run: npm ci
 
+      - name: Set up Deno for Edge Function type checks
+        uses: denoland/setup-deno@v2
+        with:
+          deno-version: v2.1.4
+
       - name: Check formatting
         run: npm run format:check
 
@@ -35,8 +40,41 @@ jobs:
       - name: Type check
         run: npm run typecheck
 
+      - name: Type check Edge Functions
+        run: deno check supabase/functions/*/index.ts
+
       - name: Test
         run: npm run test
 
       - name: Build
         run: npm run build
+
+  database:
+    runs-on: ubuntu-latest
+    timeout-minutes: 20
+
+    steps:
+      - name: Check out repository
+        uses: actions/checkout@v4
+
+      - name: Set up Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: 22
+          cache: npm
+
+      - name: Install dependencies
+        run: npm ci
+
+      - name: Start local Supabase and apply migrations
+        run: npm run supabase:start > /dev/null
+
+      - name: Run pgTAP database tests
+        run: npm run test:db
+
+      - name: Lint database functions and schema
+        run: npx supabase db lint --local --level error --fail-on error
+
+      - name: Stop local Supabase
+        if: always()
+        run: npm run supabase:stop -- --no-backup

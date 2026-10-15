@@ -244,7 +244,8 @@ GMAIL_INITIAL_SYNC_MODE=new_only
 GMAIL_INITIAL_SYNC_DAYS=0
 GMAIL_SYNC_ENABLED=true
 AI_EMAIL_ANALYSIS_ENABLED=true
-AI_MAX_EMAILS_PER_SYNC=50
+AI_MAX_REQUESTS_PER_SYNC=20
+GMAIL_MAX_MESSAGES_PER_SYNC=50
 
 # Optional business rules
 FOLLOW_UP_SUGGEST_DAYS=14
@@ -293,7 +294,7 @@ Changing the mode to `historical` must **not** activate historical import until 
 
 1. Gmail OAuth consent-screen configuration and Google verification/testing restrictions may affect access to the user's mailbox; confirm the chosen scope and publishing mode during implementation.
 2. Supabase free-tier projects may pause or have usage constraints; scheduled sync is best-effort, with a manual recovery path and missed-message catch-up.
-3. Gemini free-tier quotas, models, and data-handling terms must be verified at deployment; only privacy-validated, minimized, sanitized excerpts may be sent, and automated redaction cannot eliminate residual disclosure risk.
+3. Gemini quotas, models, paid/unpaid service status, and data-handling terms must be verified at deployment; only privacy-validated, minimized, sanitized excerpts may be sent, and automated redaction cannot eliminate residual disclosure risk.
 4. Automated matching can be wrong. Conservative validation and a review queue are mandatory, even when the AI appears confident.
 5. A single-user deployment still requires secure authentication, authorization, and protection of OAuth tokens.
 6. Deletion is irreversible. The user has explicitly chosen automatic deletion at twelve months without prior confirmation; optional CSV export is not a prerequisite for scheduled deletion.

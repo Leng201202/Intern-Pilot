@@ -4,6 +4,7 @@ import {
   BriefcaseBusiness,
   ClipboardCheck,
   LayoutDashboard,
+  LogOut,
   Settings,
   ShieldCheck,
   type LucideIcon,
@@ -11,8 +12,9 @@ import {
 import { NavLink, Outlet } from 'react-router-dom'
 
 import { Badge } from '@/components/ui/badge'
+import { Button } from '@/components/ui/button'
+import { useAuth } from '@/features/auth/auth-context'
 import { cn } from '@/lib/utils'
-import { isSupabaseConfigured } from '@/lib/supabase/client'
 
 const navigation: ReadonlyArray<{
   label: string
@@ -59,6 +61,8 @@ function Navigation({ mobile = false }: { mobile?: boolean }) {
 }
 
 export function AppShell() {
+  const auth = useAuth()
+
   return (
     <div className="bg-muted/40 min-h-svh">
       <aside className="border-border bg-background fixed inset-y-0 left-0 z-20 hidden w-64 border-r md:flex md:flex-col">
@@ -76,9 +80,9 @@ export function AppShell() {
 
         <div className="border-border mt-auto border-t p-4">
           <div className="bg-muted rounded-xl p-3">
-            <p className="text-foreground text-xs font-semibold">Phase 0</p>
+            <p className="text-foreground text-xs font-semibold">MVP</p>
             <p className="text-muted-foreground mt-1 text-xs leading-5">
-              Foundation only. Live data and integrations are not enabled.
+              Manual tracking is live. Gmail and external AI remain disabled.
             </p>
           </div>
         </div>
@@ -96,9 +100,26 @@ export function AppShell() {
                 Internship application workspace
               </p>
             </div>
-            <Badge variant={isSupabaseConfigured ? 'default' : 'warning'}>
-              {isSupabaseConfigured ? 'Supabase configured' : 'Local setup'}
-            </Badge>
+            <div className="flex items-center gap-2">
+              <div className="hidden text-right sm:block">
+                <p className="max-w-52 truncate text-xs font-medium">
+                  {auth.user?.email ?? 'Owner'}
+                </p>
+                <p className="text-muted-foreground text-xs">
+                  Authorized owner
+                </p>
+              </div>
+              <Badge>Secure session</Badge>
+              <Button
+                aria-label="Sign out"
+                onClick={() => void auth.signOut()}
+                size="icon"
+                type="button"
+                variant="ghost"
+              >
+                <LogOut aria-hidden="true" className="size-4" />
+              </Button>
+            </div>
           </div>
           <div className="md:hidden">
             <Navigation mobile />

@@ -201,7 +201,7 @@ A separate monthly cron job archives or deletes eligible records and removes exp
 | `notifications` | Dashboard alerts and action reminders |
 | `sync_runs` | Execution status and counts |
 | `sync_state` | Gmail cursor/checkpoint and recovery state |
-| `review_queue` | Ambiguous email classifications and proposed updates |
+| `review_items` | Ambiguous email classifications and proposed updates |
 
 Relationships: one owner has many applications; each application may have many email events, history entries, follow-ups, and notifications. Email events should support an unmatched state pending review. Use UUID keys where appropriate, unique constraints on Gmail message identifiers, foreign keys, and RLS policies.
 
@@ -270,7 +270,7 @@ Expected scale: one user, tens of applications, one scheduled sync daily, occasi
 |---|---|---|
 | 1. Core tracker | React UI, Supabase schema, RLS, application CRUD | Applications can be created and tracked manually |
 | 2. Gmail integration | Google OAuth, token storage, message retrieval, filtering | Relevant messages can be retrieved securely |
-| 3. AI updates | Privacy layer, optional Gemini metadata classification, matching rules, history, review queue | Safe classifications can update correct applications; unsafe or ambiguous cases wait for review |
+| 3. AI updates | Privacy layer, optional Gemini classification of sanitized recruitment excerpts, matching rules, history, review queue | Safe classifications can update correct applications; unsafe or ambiguous cases wait for review |
 | 4. Scheduling | Daily cron, manual sync, checkpoints, retries | New mail processes without an open browser |
 | 5. Follow-ups | Waiting calculations, reminders, draft generation | Dashboard identifies actions and overdue responses |
 | 6. Retention and deployment | Monthly cleanup, export, Cloudflare deployment, testing | Archive/delete lifecycle and deployed MVP work |

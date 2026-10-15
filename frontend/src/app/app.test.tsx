@@ -9,21 +9,22 @@ afterEach(() => {
 })
 
 describe('application routing', () => {
-  it('renders the dashboard at the root route', async () => {
+  it('fails closed to setup guidance when Supabase is not configured', async () => {
     render(<App />)
 
     expect(
-      await screen.findByRole('heading', { name: 'Good morning' }),
+      await screen.findByRole('heading', { name: 'InternPilot AI' }),
     ).toBeInTheDocument()
+    expect(screen.getByText('Supabase setup required')).toBeInTheDocument()
   })
 
-  it('renders a placeholder page on a nested route', async () => {
+  it('protects nested routes when no authenticated owner is present', async () => {
     window.history.pushState({}, '', '/applications')
     render(<App />)
 
     expect(
-      await screen.findByRole('heading', { name: 'Applications' }),
+      await screen.findByRole('heading', { name: 'InternPilot AI' }),
     ).toBeInTheDocument()
-    expect(screen.getByText('Planned for Phase 2')).toBeInTheDocument()
+    expect(window.location.pathname).toBe('/sign-in')
   })
 })

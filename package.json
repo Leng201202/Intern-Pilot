@@ -13,14 +13,19 @@
     "build": "npm run build --workspace @internpilot/frontend",
     "lint": "npm run lint --workspace @internpilot/frontend",
     "typecheck": "npm run typecheck --workspace @internpilot/frontend",
-    "test": "npm run test --workspace @internpilot/frontend",
+    "test": "npm run test:frontend && npm run test:functions",
+    "test:frontend": "npm run test --workspace @internpilot/frontend",
+    "test:functions": "vitest run --config supabase/functions/vitest.config.ts",
     "test:watch": "npm run test:watch --workspace @internpilot/frontend",
-    "format": "npm run format --workspace @internpilot/frontend",
-    "format:check": "npm run format:check --workspace @internpilot/frontend",
+    "format": "npm run format --workspace @internpilot/frontend && prettier --write \"supabase/functions/**/*.ts\"",
+    "format:check": "npm run format:check --workspace @internpilot/frontend && prettier --check \"supabase/functions/**/*.ts\"",
     "preview": "npm run preview --workspace @internpilot/frontend",
     "supabase:start": "supabase start",
+    "supabase:reset": "supabase db reset --local",
     "supabase:stop": "supabase stop",
-    "supabase:status": "supabase status"
+    "supabase:status": "supabase status",
+    "test:db": "supabase test db --local",
+    "validate": "npm run format:check && npm run lint && npm run typecheck && npm run test && npm run build"
   },
   "devDependencies": {
     "supabase": "2.120.0"

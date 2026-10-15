@@ -1,8 +1,8 @@
 # InternPilot AI — Database Design
 
-**Version:** 1.1  
+**Version:** 1.2
 **Date:** 14 October 2026  
-**Status:** Design baseline; migrations not yet implemented  
+**Status:** Phases 1–5 schema and trusted operations implemented
 **Database:** Supabase PostgreSQL  
 **Related documents:** `proposal.md`, `docs/requirements.md`, `docs/system-design.md`
 
@@ -73,6 +73,8 @@ All timestamps are `TIMESTAMPTZ` in UTC. Display timezone defaults to `Asia/Bang
 | `display_name` | TEXT | Nullable; personal data, never forwarded to AI |
 | `timezone` | TEXT | NOT NULL DEFAULT `'Asia/Bangkok'`; validate supported timezone |
 | `university_deadline` | DATE | Nullable; personal planning deadline |
+| `university_deadline_notified_for` | DATE | Backend-managed idempotency marker for deadline reminders |
+| `ai_risk_acknowledged_at` | TIMESTAMPTZ | Nullable owner acknowledgement; never overrides a privacy block |
 | `created_at` | TIMESTAMPTZ | NOT NULL DEFAULT `now()` |
 | `updated_at` | TIMESTAMPTZ | NOT NULL DEFAULT `now()` |
 
@@ -295,7 +297,7 @@ Use ordinary btree indexes first. Add text search or trigram indexes only if sea
 
 ## 7. RLS and Privilege Model
 
-Enable RLS on **all nine** `public` tables. Revoke unnecessary privileges from `anon` and `authenticated`; grant only the operations needed. `auth.uid() = user_id` is the basic owner predicate, but the app is explicitly **single-user**: an additional authorized-user allowlist or account-provisioning control must reject other signed-in Google accounts.
+Enable RLS on **all nine** `public` tables. Revoke unnecessary privileges from `anon` and `authenticated`; grant only the operations needed. `auth.uid() = user_id` is the basic owner predicate, but the app is explicitly **single-user**. Phase 1 additionally requires the server-managed JWT claim `app_metadata.internpilot_owner = true`; user-editable metadata is never used for authorization. Public sign-up remains disabled after the owner is provisioned, and changing the claim requires session refresh or revocation so stale JWTs do not retain access.
 
 | Table | Authenticated browser | Trusted backend |
 |---|---|---|
@@ -305,9 +307,9 @@ Enable RLS on **all nine** `public` tables. Revoke unnecessary privileges from `
 | `email_events` | Own row SELECT (metadata only) | Insert/update/deduplicate |
 | `application_history` | Own row SELECT | Append via trigger only |
 | `follow_ups` | Own row SELECT; restricted user actions | Create/update reminders |
-| `notifications` | Own row SELECT; mark read via RPC | Insert/resolve/delete |
+| `notifications` | Own row SELECT; restricted `is_read` update | Insert/resolve/delete |
 | `sync_runs` | Own row SELECT | Insert/update/delete |
-| `review_items` | Own row SELECT; resolve via RPC | Insert/update |
+| `review_items` | Own row SELECT; resolve through authenticated Edge Function | Insert/update through trusted RPC |
 
 ### 7.1 Example owner policy
 
@@ -408,29 +410,29 @@ The cleanup routine must serialize safely against concurrent reopen operations, 
 
 ## 13. Acceptance Tests
 
-- [ ] A signed-out or unauthorized account cannot read or change any user-owned row.
-- [ ] Authenticated browser cannot read `email_connections` or retrieve decrypted OAuth tokens.
-- [ ] Browser cannot forge `user_id`, `closed_at`, `archived_at`, or `change_source`.
-- [ ] Invalid application statuses fail database constraints.
-- [ ] Entering `accepted`, `rejected`, or `withdrawn` sets `closed_at`; reopening clears closure/archive fields.
-- [ ] Every genuine status transition creates exactly one immutable history entry.
-- [ ] Reprocessing the same Gmail message does not duplicate email events or status history.
-- [ ] Email events contain no subject/body/snippet/attachment content.
-- [ ] Privacy-blocked messages create a safe review item without calling Gemini.
-- [ ] Manual and scheduled sync cannot concurrently process the same mailbox.
-- [ ] Archived closed applications remain viewable and can be restored.
-- [ ] At 6 months from closure, an eligible closed application is archived.
-- [ ] At 12 months from closure, an eligible archived closed application and dependent records are deleted without a prompt.
-- [ ] An active or reopened application is never deleted due to an old closure date.
-- [ ] Deleting a parent application does not leave broken references or expose deleted content.
-- [ ] Sync diagnostics and resolved notifications expire without losing Gmail checkpoints.
+- [x] A signed-out or unauthorized account cannot read or change any user-owned row.
+- [x] Authenticated browser cannot read `email_connections` or retrieve decrypted OAuth tokens.
+- [x] Browser cannot forge `user_id`, `closed_at`, `archived_at`, or `change_source`.
+- [x] Invalid application statuses fail database constraints.
+- [x] Entering `accepted`, `rejected`, or `withdrawn` sets `closed_at`; reopening clears closure/archive fields.
+- [x] Every genuine status transition creates exactly one immutable history entry.
+- [x] Reprocessing the same Gmail message does not duplicate email events or status history.
+- [x] Email events contain no subject/body/snippet/attachment content.
+- [x] Privacy-blocked messages create a safe review item without calling Gemini.
+- [x] Manual and scheduled sync cannot concurrently process the same mailbox.
+- [x] Archived closed applications remain viewable and can be restored.
+- [x] At 6 months from closure, an eligible closed application is archived.
+- [x] At 12 months from closure, an eligible archived closed application and dependent records are deleted without a prompt.
+- [x] An active or reopened application is never deleted due to an old closure date.
+- [x] Deleting a parent application does not leave broken references or expose deleted content.
+- [x] Sync diagnostics and resolved notifications expire without losing Gmail checkpoints.
 
-## 14. Open Implementation Details (Not Blocking the Logical Design)
+## 14. Deployment Decisions Still Required
 
-- Choose the exact restricted RPC signatures and whether status writes are entirely RPC-based or a combination of RPC and protected triggers.
-- Decide whether `profiles` is necessary beyond timezone and university deadline; it may be omitted if these settings are stored securely elsewhere.
-- Define a tested Gmail history-expiration recovery strategy and bounded event-ledger pruning policy.
-- Finalize the monthly cron day/time and maintenance job authentication.
-- Validate the latest Google OAuth requirements and Supabase free-tier behavior before deployment.
+- Browser writes use column-level grants plus protected triggers. The implemented backend-only AI transition RPC is service-role-only, validates event/application ownership, privacy outcome, chronology, closed state, and supported transitions, and never accepts a client-selected `change_source`.
+- `profiles` remains the owner-scoped location for timezone, university deadline, and the residual-risk acknowledgement.
+- Gmail history expiration uses bounded paginated recovery with a captured baseline checkpoint; durable message IDs preserve deduplication.
+- Daily reminders run at 01:15 UTC and monthly retention at 01:30 UTC on day 1. Gmail sync uses the separately authenticated Edge Function at 01:00 UTC after the hosted schedule template is installed.
+- Validate the latest Google OAuth requirements and hosted Supabase plan behavior before deployment.
 
-**Next document:** `docs/ai-email-workflow.md`, followed by `docs/security-design.md` and executable Supabase SQL migrations.
+**Operational references:** `docs/ai-email-workflow.md`, `docs/security-design.md`, `docs/testing-plan.md`, and `docs/deployment.md`.

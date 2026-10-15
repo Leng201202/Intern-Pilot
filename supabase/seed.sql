@@ -1,0 +1,2 @@
+-- Intentionally empty. Phase 1 database tests create synthetic users and data
+-- inside rolled-back transactions; personal or production data must not be seeded.

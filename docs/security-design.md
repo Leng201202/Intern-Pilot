@@ -100,7 +100,7 @@ Permitted example payload (only after inspection):
 
 ### 5.4 Provider privacy
 
-Gemini API free-tier content may be subject to Google's applicable data-use, improvement, retention, and human-review terms. **Do not claim submissions are private or excluded from training.** Recheck current terms before sending real emails; develop and test using synthetic data. Provide a backend `AI_ENABLED=false` switch and a clear user-facing explanation of residual privacy risk. If the user's requirement changes to *zero possibility of disclosure*, do not send email text to external AI at all.
+Gemini API unpaid-service content may be subject to Google's applicable data-use, improvement, retention, and human-review terms. **Do not claim submissions are private or excluded from training.** Recheck current terms before sending real emails; develop and test using synthetic data. Keep the backend `AI_EMAIL_ANALYSIS_ENABLED=false` and `AI_REAL_EMAIL_RISK_ACCEPTED=false` release gates closed by default and show a clear user-facing explanation of residual privacy risk. If the user's requirement changes to *zero possibility of disclosure*, do not send email text to external AI at all.
 
 ## 6. AI output and status-change controls
 
@@ -114,7 +114,7 @@ Gemini API free-tier content may be subject to Google's applicable data-use, imp
 
 ## 7. Database and storage protection
 
-- Use UUID identifiers and foreign keys; enforce ownership and RLS for `profiles`, `applications`, `email_connections`, `email_events`, `application_history`, `follow_ups`, `notifications`, `sync_runs`, and `review_queue`.
+- Use UUID identifiers and foreign keys; enforce ownership and RLS for `profiles`, `applications`, `email_connections`, `email_events`, `application_history`, `follow_ups`, `notifications`, `sync_runs`, and `review_items`.
 - Restrict encrypted token columns and internal sync checkpoints from direct frontend reads; prefer dedicated server-side access even for the owner.
 - Do not expose the Supabase `service_role` key in React. Edge Functions using elevated credentials must explicitly verify the requesting user and scope every operation to that owner.
 - Use database constraints/triggers for status history and closure timestamps; use protected database operations for archive and cleanup actions.
@@ -154,13 +154,10 @@ Avoid putting secrets or message text in exception objects, monitoring traces, a
 # Server-side settings; illustrative only
 GMAIL_INITIAL_SYNC_MODE=new_only
 GMAIL_INITIAL_SYNC_DAYS=0
-AI_ENABLED=true
-AI_PRIVACY_MODE=strict
-AI_ALLOW_EMAIL_BODY=false        # raw body prohibited; sanitized excerpt only
-AI_ALLOW_ATTACHMENTS=false
-AI_BLOCK_ON_UNCERTAINTY=true
-AI_LOG_REQUEST_CONTENT=false
-AI_MAX_EMAILS_PER_SYNC=50
+AI_EMAIL_ANALYSIS_ENABLED=false
+AI_REAL_EMAIL_RISK_ACCEPTED=false
+AI_MAX_REQUESTS_PER_SYNC=20
+GMAIL_MAX_MESSAGES_PER_SYNC=50
 ```
 
 These flags do not themselves enforce privacy. The backend must enforce the hard prohibitions regardless of environment values. Store Gemini API keys, OAuth client secrets, refresh-token encryption keys, and scheduler credentials in Supabase-managed secrets; never commit them to source control. `.env.example` must contain placeholders only.
@@ -191,7 +188,7 @@ Run tests with **synthetic emails**, including adversarial cases and unusual for
 ## 12. Residual risks and release gate
 
 1. **Imperfect redaction:** unseen identifiers or confidential context may reach Gemini. Mitigate with conservative blocking and manual review, but risk cannot be eliminated while sending excerpts.
-2. **Provider processing:** API provider policies may allow use or review of submitted free-tier content; verify terms before live use.
+2. **Provider processing:** API provider policies may allow use or review of submitted unpaid-service content; verify terms before live use.
 3. **Gmail scope breadth:** read-only access is not restricted to recruitment messages; protect tokens and enforce local filtering.
 4. **Misclassification and spoofing:** Gemini and sender-domain matching can be wrong; require multiple signals and preserve review paths.
 5. **Service limits:** free-tier quotas, function limits, and paused projects can delay sync; show last successful sync and recover without skipping messages.
@@ -200,16 +197,16 @@ Run tests with **synthetic emails**, including adversarial cases and unusual for
 
 ## 13. Implementation checklist
 
-- [ ] Configure Supabase Auth and owner-only authorization.
-- [ ] Implement and test RLS and protected system-managed columns.
-- [ ] Implement Gmail OAuth read-only flow, encrypted refresh tokens, and revocation.
-- [ ] Implement new-only sync checkpoint, deduplication, and lock/lease.
-- [ ] Implement local unrelated-mail filter and company matching.
-- [ ] Implement sanitizer, sensitive-content blocker, and final outbound payload gate.
-- [ ] Implement Gemini structured output with strict schema validation.
-- [ ] Implement backend status-transition checks and atomic audit history.
-- [ ] Implement metadata-only manual review and Gmail deep links.
-- [ ] Secure manual and scheduled function invocation independently.
-- [ ] Implement metadata-only logs and scheduled retention cleanup.
-- [ ] Run synthetic privacy, prompt-injection, auth, and replay tests.
+- [x] Configure Supabase Auth and owner-only authorization.
+- [x] Implement and test RLS and protected system-managed columns.
+- [x] Implement Gmail OAuth read-only flow, encrypted refresh tokens, and revocation.
+- [x] Implement new-only sync checkpoint, deduplication, and lock/lease.
+- [x] Implement local unrelated-mail filter and company matching.
+- [x] Implement sanitizer, sensitive-content blocker, and final outbound payload gate.
+- [x] Implement Gemini structured output with strict schema validation.
+- [x] Implement backend status-transition checks and atomic audit history.
+- [x] Implement metadata-only manual review and Gmail deep links.
+- [x] Secure manual and scheduled function invocation independently.
+- [x] Implement metadata-only logs and scheduled retention cleanup.
+- [x] Run synthetic privacy, prompt-injection, auth, and replay tests.
 - [ ] Verify current Google/Gemini terms and obtain informed consent before live processing.
