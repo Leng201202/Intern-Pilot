@@ -5,6 +5,8 @@
 
 This runbook deploys the React SPA to Cloudflare Pages and the database, Auth, Edge Functions, and schedules to Supabase. Production rollout is deliberately fail-closed: Gmail may be connected after OAuth review, but real Gmail-to-Gemini processing must remain disabled until the provider-policy and residual-risk release gates below are satisfied.
 
+For a click-by-click and command-by-command Supabase hosted-project walkthrough, follow [`supabase-cloud-setup.md`](supabase-cloud-setup.md). This document remains the shorter end-to-end deployment and operations reference.
+
 ## 1. Release prerequisites
 
 - All commands in `docs/testing-plan.md` pass from a clean checkout.

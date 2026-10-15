@@ -7,6 +7,8 @@
 
 `https://www.googleapis.com/auth/gmail.readonly` is currently classified by Google as a restricted scope. Depending on the OAuth audience and whether restricted-scope data is stored or transmitted through servers, Google verification and an annual security assessment may apply. A personal testing deployment should keep the consent screen in testing and allow only the intended owner until obligations are resolved.
 
+For an external Google app in Testing status, a refresh token that includes Gmail scopes normally expires after seven days. Testing mode is appropriate for synthetic staging but is not a stable long-running production connection. A production release also needs the required public disclosures, consent immediately before data access, data-deletion instructions, and an affirmative Google Limited Use statement.
+
 The implementation requests only Gmail read-only plus OpenID identity scopes, uses state and PKCE, encrypts refresh tokens, starts from a new-only checkpoint, and supports revocation/disconnect. These controls reduce risk but do not change Google's scope classification.
 
 References:
@@ -15,6 +17,8 @@ References:
 - [OAuth app verification](https://support.google.com/cloud/answer/13464325?hl=en)
 - [Restricted-scope security assessment](https://support.google.com/cloud/answer/13464321?hl=en)
 - [OAuth 2.0 best practices](https://developers.google.com/identity/protocols/oauth2/resources/best-practices)
+- [OAuth 2.0 authorization and testing-token lifetime](https://developers.google.com/identity/protocols/oauth2)
+- [Google Workspace user-data policy](https://developers.google.com/workspace/workspace-api-user-data-developer-policy)
 
 ## Gemini data use
 

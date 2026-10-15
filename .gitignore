@@ -6,17 +6,24 @@ dist/
 coverage/
 *.tsbuildinfo
 
-# Local environment files. Commit examples only.
+# Local environment and secret files at any directory depth.
+# Commit placeholder examples only; never commit files containing real values.
 .env
 .env.*
+**/.env
+**/.env.*
 !.env.example
+!.env.*.example
 !**/.env.example
-!**/.env.production.example
+!**/.env.*.example
 
 # Supabase local state and function secrets
 supabase/.branches/
 supabase/.temp/
 supabase/functions/.env
+supabase/functions/.env.*
+!supabase/functions/.env.example
+!supabase/functions/.env.*.example
 
 # Logs and local tooling
 *.log

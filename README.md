@@ -78,6 +78,7 @@ The frontend can run without Supabase credentials, but it fails closed to a setu
 - Only `VITE_SUPABASE_URL` and `VITE_SUPABASE_PUBLISHABLE_DEFAULT_KEY` are permitted in the browser bundle.
 - Supabase service-role keys, database passwords, Gmail tokens, Gemini keys, OAuth client secrets, encryption keys, and scheduler credentials must never use the `VITE_` prefix or appear in frontend files.
 - Hosted backend secrets are configured through Supabase secret management; see [`docs/deployment.md`](docs/deployment.md).
+- For the complete hosted Supabase sequence—project creation, migrations, Auth, owner provisioning, Edge Functions, Vault, and Cron—use [`docs/supabase-cloud-setup.md`](docs/supabase-cloud-setup.md).
 
 The publishable key is not a substitute for authorization. The database requires explicit grants, RLS ownership, and the server-managed owner claim for browser access. The service-role key must never appear in the frontend.
 
