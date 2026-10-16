@@ -455,15 +455,18 @@ Only after the Gmail OAuth obligations are understood:
 
 Do not perform this stage until `docs/provider-review.md` is resolved for the actual account, region, model, billing tier, and Google Workspace data policy.
 
-1. Use a paid Gemini project; do not use unpaid Gemini services with recruitment correspondence.
-2. Select a currently supported model and verify its retention/data-use terms.
-3. Add `GEMINI_MODEL` and `GEMINI_API_KEY` only to Supabase Edge Function secrets.
-4. Keep both AI flags `false` while checking configuration.
-5. Read the UI residual-risk warning and set the owner acknowledgement.
-6. Set `AI_REAL_EMAIL_RISK_ACCEPTED=true`.
-7. Set `AI_EMAIL_ANALYSIS_ENABLED=true` last.
-8. Test only synthetic emails first. Confirm sensitive or uncertain content never reaches Gemini and invalid responses never update applications.
-9. Inspect metadata-only rows and sanitized operational logs for accidental content leakage.
+1. In Google AI Studio, import or create a dedicated Cloud project and move it to the **Paid** tier. Confirm the project is shown as paid, configure a small spend cap, and do not use unpaid Gemini services with recruitment correspondence.
+2. Create a new Gemini **authorization key** in that project. Do not reuse the Gmail OAuth client, its client secret, a browser key, or a legacy standard API key. Never paste this key into chat, source control, Cloudflare, or a `VITE_` variable.
+3. Select a currently supported stable model and verify its retention/data-use terms. As reviewed on 16 October 2026, the recommended classification model is `gemini-3.8-flash`, which supports structured output; recheck before setup because model availability changes.
+4. Deploy the current frontend so the complete transfer disclosure appears before consent.
+5. In **Supabase Dashboard → Edge Functions → Secrets**, add `GEMINI_MODEL=gemini-3.8-flash` and `GEMINI_API_KEY=<the dedicated authorization key>`. Supabase applies secret changes without a function redeploy. Keep both AI flags `false` while checking this configuration.
+6. Sign in to InternPilot, read the Settings transfer disclosure and residual-risk warning, then set the owner acknowledgement. The acknowledgement is affirmative, revocable consent for the disclosed sanitized-excerpt transfer; it does not bypass any privacy block.
+7. Confirm the connected Gmail account contains synthetic test messages only. Then set `AI_REAL_EMAIL_RISK_ACCEPTED=true` in Supabase Edge Function secrets.
+8. Set `AI_EMAIL_ANALYSIS_ENABLED=true` last. This is the immediate emergency-off switch, so be ready to return it to `false` if any check fails.
+9. Send a new synthetic interview or assessment message that uniquely matches one synthetic application, run **Sync emails now**, and confirm a validated update/history/notification is created.
+10. Send new synthetic irrelevant, ambiguous-role, sensitive-data, prompt-injection, and malformed-event cases. Confirm irrelevant mail causes no Gemini call and every unsafe or uncertain case goes to manual review without changing status.
+11. Inspect only metadata rows, Supabase function logs, and browser responses for accidental email text, sanitized excerpts, identifiers, tokens, or keys. Any occurrence fails the stage: immediately set `AI_EMAIL_ANALYSIS_ENABLED=false`, remove the key if exposure is suspected, and investigate using metadata only.
+12. Leave real personal-email testing disabled after this stage. It requires a separate explicit owner authorization; synthetic staging completion is not that authorization.
 
 Automated sanitization cannot guarantee complete privacy. If zero external disclosure is required, leave Gemini disabled and use manual review.
 

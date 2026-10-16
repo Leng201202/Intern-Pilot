@@ -249,9 +249,33 @@ export default function SettingsPage() {
                 </p>
               </div>
               <p className="text-muted-foreground">
-                Automated redaction is best-effort and cannot guarantee complete
-                privacy. Gemini remains disabled unless all server-side release
-                gates and this acknowledgement are enabled.
+                If the operator enables AI, InternPilot may send a minimal,
+                locally filtered and sanitized excerpt from a likely recruitment
+                email to Google&apos;s paid Gemini API solely to classify the
+                recruitment event shown in this dashboard. It never sends raw
+                emails, full threads, attachments, credentials, or OAuth tokens.
+              </p>
+              <p className="text-muted-foreground">
+                Google states that paid Gemini API prompts and responses are not
+                used to improve its products, but may retain them for a limited
+                period for abuse monitoring and legal obligations. Automated
+                redaction is best-effort and cannot guarantee complete privacy;
+                a permitted excerpt may still contain identifying context.
+              </p>
+              <p className="text-muted-foreground">
+                InternPilot uses Google Workspace data only to provide this
+                visible application-tracking feature and follows the{' '}
+                <a
+                  className="text-primary underline underline-offset-4"
+                  href="https://developers.google.com/terms/api-services-user-data-policy"
+                  rel="noreferrer"
+                  target="_blank"
+                >
+                  Google API Services User Data Policy, including its Limited
+                  Use requirements
+                </a>
+                . Gemini remains disabled unless every server-side release gate
+                and this acknowledgement are enabled.
               </p>
               <label className="border-border flex items-start gap-3 rounded-xl border p-4">
                 <input
@@ -264,9 +288,11 @@ export default function SettingsPage() {
                   type="checkbox"
                 />
                 <span>
-                  I understand automated sanitization cannot guarantee complete
-                  privacy and that permitted excerpts retain disclosure risk.
-                  This acknowledgement alone does not enable Gemini.
+                  I consent to this limited transfer of sanitized recruitment
+                  excerpts to Google&apos;s paid Gemini API and accept the
+                  remaining disclosure risk. I can withdraw this consent by
+                  clearing this checkbox. This acknowledgement alone does not
+                  enable Gemini or override a privacy block.
                 </span>
               </label>
             </CardContent>

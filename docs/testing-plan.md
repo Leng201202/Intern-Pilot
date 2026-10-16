@@ -63,7 +63,7 @@ Provider-facing tests should stub `fetch` and assert request bodies/headers with
 1. Start Supabase, copy only its local URL and publishable key into `frontend/.env.local`, and run `npm run dev`.
 2. Verify the unconfigured/setup and signed-out states on mobile and desktop widths.
 3. With a synthetic owner account, test application CRUD, duplicate warning, filters, status history, archive/restore, notifications, follow-ups, CSV export, and local follow-up-draft copy.
-4. Confirm settings explains that automated sanitization cannot guarantee privacy and that acknowledgement alone does not enable Gemini.
+4. Confirm settings identifies Google's paid Gemini API as the recipient, explains the purpose and limited data transfer, states the provider-retention and imperfect-redaction risks, allows consent to be withdrawn, and explains that acknowledgement alone does not enable Gemini.
 5. Confirm the review queue exposes only metadata and a Gmail deep link, never a stored subject/body preview.
 6. Run `npm run build && npm run preview`; directly load nested SPA routes.
 

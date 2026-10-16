@@ -1,7 +1,8 @@
 # Provider Policy Review — Gmail and Gemini
 
-**Reviewed:** 15 October 2026  
-**Decision:** implementation is complete behind fail-closed gates; real Gmail-to-Gemini processing is not approved by this source review alone
+**Reviewed:** 16 October 2026
+
+**Decision:** eligible for paid-service, synthetic-only Gemini staging after informed consent; real Gmail-to-Gemini processing remains separately gated
 
 ## Gmail OAuth
 
@@ -22,19 +23,28 @@ References:
 
 ## Gemini data use
 
-Current Gemini API terms distinguish unpaid and paid services. Unpaid-service submissions may be used to improve Google products and may be reviewed by humans; the terms warn against submitting sensitive, confidential, or personal information. Paid services state that prompts and responses are not used to improve products, but abuse monitoring/retention may still apply. Guaranteed zero data retention is a separate capability with eligibility and model restrictions.
+Current Gemini API terms distinguish unpaid and paid services. Unpaid-service submissions may be used to improve Google products and may be reviewed by humans; the terms warn against submitting sensitive, confidential, or personal information. Paid services state that prompts and responses are not used to improve products, but prompts and responses may still be logged for a limited period for abuse monitoring and required legal or regulatory disclosures. Guaranteed zero data retention is a separate capability with eligibility and model restrictions.
+
+Google's current Workspace policy lists productivity enhancements and user-benefiting reporting or monitoring based on Gmail data as approved use cases. It permits a transfer needed to provide a visible user-facing feature only with the user's consent, and it prohibits using Workspace data to train or improve a general AI model. The paid Gemini terms and InternPilot's single-purpose classification flow appear compatible with those conditions, but this is a documented engineering assessment rather than legal advice or a provider approval. The disclosure and consent must remain accurate, prominent, and revocable.
+
+For the 16 October 2026 staging review, `gemini-3.8-flash` is Google's current stable Flash endpoint and supports structured output. Model availability, billing status, region, retention, and terms must still be checked in the actual Cloud project before installing the key.
+
+Google AI Studio now creates authorization keys bound to a service account, and Google's migration schedule rejects legacy standard keys after September 2026. Create a new dedicated Gemini authorization key in AI Studio; do not reuse the Gmail OAuth client, a browser key, or an older unrestricted standard key.
 
 Recruitment correspondence can contain personal and confidential data. Therefore:
 
 - Never enable this workflow on unpaid Gemini services.
 - Use a paid project only after confirming the selected model, region, retention, and account terms.
-- Confirm compatibility with Google Workspace API user-data rules for content derived from Gmail. If Google or qualified counsel cannot confirm this exact use, keep Gemini disabled.
+- Keep the transfer limited to the disclosed, user-facing classification feature and preserve affirmative, revocable consent. If the actual account terms or qualified review do not permit this exact use, keep Gemini disabled.
 - Never claim that sanitization anonymizes perfectly or that provider retention is zero unless the configured service contract explicitly guarantees it.
 
 References:
 
 - [Gemini API additional terms](https://ai.google.dev/gemini-api/terms)
 - [Gemini API zero data retention](https://ai.google.dev/gemini-api/docs/zdr)
+- [Gemini API models](https://ai.google.dev/gemini-api/docs/models)
+- [Gemini structured output](https://ai.google.dev/gemini-api/docs/structured-output)
+- [Gemini API keys](https://ai.google.dev/gemini-api/docs/api-key)
 
 ## Release decision record
 
@@ -46,4 +56,4 @@ The backend requires all three independent gates:
 
 The first two are server-side secrets/configuration. The third is an informed acknowledgement, not a privacy override. Any failed filter, ambiguous application match, uncertain sanitization, high-risk content, invalid model response, stale event, or conflicting transition still fails closed to manual review.
 
-Automated redaction cannot guarantee complete privacy. The default and presently recommended production configuration is to leave both server-side AI gates `false` until the operator completes the external compliance review and explicitly accepts the remaining risk.
+Automated redaction cannot guarantee complete privacy. Keep both server-side AI gates `false` until the paid account and model are verified, synthetic staging is ready, and the operator explicitly accepts the remaining risk in the application. Limited real-email testing requires a separate explicit authorization after staging passes.

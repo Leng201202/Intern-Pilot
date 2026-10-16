@@ -1,8 +1,8 @@
 # InternPilot AI — Development Plan
 
 **Version:** 1.4
-**Date:** 15 October 2026
-**Status:** Phases 0–5 implemented and locally validated; Phase 6 source hardening complete, hosted deployment/provider authorization pending
+**Date:** 16 October 2026
+**Status:** Phases 0–6 implemented and deployed; manual tracker and AI-disabled Gmail staging validated; optional Gemini staging remains gated
 **Scope:** Single-user MVP
 
 ## 1. Purpose
@@ -166,14 +166,14 @@ This plan translates the approved project proposal, requirements, system design,
 - [x] Test API failures, token expiry/revocation, partial syncs, rate limits, and duplicate delivery.
 - [x] Confirm secret handling, HTTPS, minimal logs, and permission boundaries.
 - [x] Review current Google OAuth verification obligations and Gemini API data-use terms before real personal email processing.
-- [ ] Deploy frontend to Cloudflare Pages and backend/database to Supabase.
-- [ ] Configure production secrets and scheduler credentials outside the repository.
-- [ ] Run an end-to-end smoke test with synthetic messages, then limited real-email testing only after privacy review.
+- [x] Deploy frontend to Cloudflare Pages and backend/database to Supabase.
+- [x] Configure production secrets and scheduler credentials outside the repository.
+- [x] Run an end-to-end smoke test with synthetic messages; limited real-email testing remains optional and requires separate authorization after privacy review.
 - [x] Document deployment, recovery, configuration, and known limitations.
 
 **Acceptance criteria:** Critical security and functional tests pass; no secrets appear in browser bundles or logs; deployed application can recover from sync errors; privacy risks are disclosed.
 
-**Implementation status (15 October 2026):** Source hardening, local Edge startup, 32 function tests, 5 frontend tests, 83 pgTAP assertions, clean schema linting, and deployment/recovery documentation are complete. Cloudflare/Supabase deployment, production secret installation, and provider-backed smoke testing remain intentionally unchecked because they require operator accounts, billing, credentials, compliance decisions, and explicit external-write authorization.
+**Implementation status (16 October 2026):** Complete. Source hardening, local Edge startup, 34 function tests, 6 frontend tests, 83 pgTAP assertions, clean schema linting, and deployment/recovery documentation are complete. The operator deployed Cloudflare Pages, Supabase migrations/functions, production secrets, Vault-backed schedules, owner authentication, and the Gmail integration, then completed the manual-tracker and AI-disabled synthetic Gmail smoke tests. Gemini remains fail-closed pending the optional paid-service Stage C release gate.
 
 ## 12. Suggested Development Backlog
 
@@ -246,4 +246,4 @@ A task is complete only when:
 
 ---
 
-**Next action:** Complete the Phase 6 hosted deployment checklist in `deployment.md`. Keep Gemini disabled until Google/Gemini policy compatibility is confirmed, production secrets are installed, staging tests pass, and the owner explicitly accepts the residual risk.
+**Next action:** If AI classification is desired, complete optional Stage C in `supabase-cloud-setup.md` with a paid Gemini project, `gemini-3.8-flash`, explicit owner consent, and synthetic emails first. Keep real-email Gemini processing disabled until staging passes and the owner separately authorizes limited live testing.

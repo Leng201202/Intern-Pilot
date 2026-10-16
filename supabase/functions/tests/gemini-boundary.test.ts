@@ -61,10 +61,15 @@ describe("Gemini provider boundary", () => {
     expect(new Headers(init?.headers).get("x-goog-api-key")).toBe(
       "synthetic-api-key",
     );
-    const body = JSON.parse(String(init?.body)) as Record<string, unknown>;
+    const body = JSON.parse(String(init?.body)) as {
+      generationConfig?: Record<string, unknown>;
+    };
     expect(JSON.stringify(body)).toContain("message_excerpt");
     expect(JSON.stringify(body)).not.toContain("gmail_message_id");
     expect(JSON.stringify(body)).not.toContain("application_id");
+    expect(body.generationConfig?.responseFormat).toBeDefined();
+    expect(body.generationConfig?.responseMimeType).toBeUndefined();
+    expect(body.generationConfig?.responseSchema).toBeUndefined();
   });
 
   it("fails closed on malformed provider output", async () => {
